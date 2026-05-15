@@ -11,6 +11,13 @@ This repository provides the implementation of a parsimonious Wavelet-Based Baye
 
 To overcome the severe parameter inflation that typically arises when modeling wavelet coefficients with spatial dependence, our methodology anchors a single, shared Matérn spatial correlation matrix at each resolution level. Adaptive sparsity is enforced through a spatially informed **Regularized Horseshoe (RHS)** prior. To ensure computational efficiency and avoid challenging posterior geometries when using the No-U-Turn Sampler (NUTS), the model is implemented using a strictly Non-Centered Parameterization (NCP).
 
+## Prerequisites and Dependencies
+The model implementation is conducted in R, with HMC sampling performed via Stan. Please ensure your environment has the following packages installed:
+
+install.packages(c("wavethresh", "fdagstat", "ggplot2", "dplyr", "tidyr", "coda", "matrixcalc", "missForest"))
+# For Stan, we recommend cmdstanr or rstan:
+install.packages("cmdstanr", repos = c("[https://mc-stan.org/r-packages/](https://mc-stan.org/r-packages/)", getOption("repos")))
+
 ## Repository Structure
 
 The repository is organized into two main sections, reflecting the manuscript's core analyses: the real-world environmental application and the Monte Carlo simulation studies.
@@ -39,6 +46,3 @@ SFDA-Horseshoe-Wavelets/
         ├── Simulation_1/
         ├── Simulation_2/
         └── Simulation_3/
-
-## Prerequisites and Dependencies
-The model implementation is conducted in R, with HMC sampling performed via Stan. Please ensure your environment has the following packages installed:
