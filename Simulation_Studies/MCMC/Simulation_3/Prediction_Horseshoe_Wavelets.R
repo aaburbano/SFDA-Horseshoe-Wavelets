@@ -11,9 +11,9 @@ library("wavethresh")
 library("cmdstanr")
 library("snowfall")
 
-load("locations_obs.RData")
-load("locations_full.RData")
-load("Yobs.RData")
+load(".../Simulation_Studies/Main_Data/SNR/Medium/Data_Simulation_3/locations_obs.RData")
+load(".../Simulation_Studies/Main_Data/SNR/Medium/Data_Simulation_3/locations_full.RData")
+load(".../Simulation_Studies/Main_Data/SNR/Medium/Data_Simulation_3/Yobs.RData")
 
 #-------------------------------------------------------------------------------
 # General parameters
