@@ -12,9 +12,8 @@ library("coda")
 library("matrixcalc")
 library("cmdstanr")
 
-setwd("C:/Users/alexb/OneDrive/Artigo2/Ap/Data/PM10/2025/Data_PM10")
-load("PM10_2025_day.RData")
-load("coord.RData")
+load("../Main_Data/PM10_2025_day.RData")
+load("../Main_Data/coord.RData")
 
 #-------------------------------------------------------------------------------
 Sample = PM10_2025_day %>% 
