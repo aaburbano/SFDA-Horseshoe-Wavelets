@@ -39,3 +39,6 @@ SFDA-Horseshoe-Wavelets/
         ├── Simulation_1/
         ├── Simulation_2/
         └── Simulation_3/
+
+## Prerequisites and Dependencies
+The model implementation is conducted in R, with HMC sampling performed via Stan. Please ensure your environment has the following packages installed:
