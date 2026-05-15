@@ -11,12 +11,9 @@ library("gstat")
 #-------------------------------------------------------------------------------
 # Set directories and load data
 #-------------------------------------------------------------------------------
-setwd("C:/Users/alexb/OneDrive/Artigo2/Dados_Sinteticos/Simulation_Horseshoe/Ap_PM10_2/Data_PM10")
-load("PM10_2025_day.RData")
-
-setwd("C:/Users/alexb/OneDrive/Artigo2/Dados_Sinteticos/Simulation_Horseshoe/Ap_PM10_2/Data_PM10/teste_2")
-load("coordinates_utm_full_km.RData")
-load("coordinates_utm_obs_km.RData")
+load("../Main_Data/PM10_2025_day.RData")
+load("../Main_Data/coordinates_utm_full_km.RData")
+load("../Main_Data/coordinates_utm_obs_km.RData")
 #-------------------------------------------------------------------------------
 
 # Pre-processing: Apply log transformation
