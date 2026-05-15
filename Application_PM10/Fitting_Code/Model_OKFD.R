@@ -80,7 +80,7 @@ plotVariogram(g)
 modelo_inicial = vgm(psill = 1, model = "Sph", range = max_dist / 2, nugget = 0.1)
 g = fitVariograms(g, modelo_inicial, fitRanges = TRUE, forceNugget = TRUE)
 
-# 7. Add covariance structure based on fitted model
+# 7. Add covariance structure based on the fitted model
 g = addCovariance(g)
 
 # 8. Generate OKFD spatial predictions for new locations
@@ -98,3 +98,6 @@ Ypred_OKF = data.frame(ok1 = forecasts_okf$Forecast[,1],
 matplot(1:128, Ypred_OKF, type = 'l', lty = 1,
         xlab = "Day of the Year", ylab = "Smoothed Value",
         main = "Predicted Curves for Ungauged Sites (OKFD)")
+
+save(Ypred_OKF, file = ".../Ypred_OKF.RData")
+               
