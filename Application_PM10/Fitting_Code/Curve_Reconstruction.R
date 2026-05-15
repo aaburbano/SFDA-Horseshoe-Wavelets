@@ -34,8 +34,7 @@ sd_Y     = sd(matriz_Y)
 n_original = 128 
 pad_size = 64
 
-setwd("C:/Users/alexb/OneDrive/Artigo2/Dados_Sinteticos/Simulation_Horseshoe/Ap_PM10_2/Prediction/teste_2/mcmc/Resul")
-load("diagnostic_pred.RData")
+load(".../Main_Data/Results/diagnostic_pred.RData")
 n = 256
 m = 3
 
@@ -135,54 +134,3 @@ smooth = ggplot(Curves, aes(x=Day, y=Val,group=factor(Local)))+geom_line()+
          axis.text = element_text(size=15), 
          plot.subtitle = element_text(size=25))
 smooth
-
-save(log_pred_sample_day, file = ".../log_pred_sample_day.RData")
-
-#-------------------------------------------------------------------------------
-# Prediction Data Preparation
-#-------------------------------------------------------------------------------
-rm(list=ls(all=TRUE))
-
-library("MASS")    
-library("fields")  
-library("ggplot2")
-library("dplyr")
-library("tidyr")
-
-setwd("C:/Users/alexb/OneDrive/Artigo2/Dados_Sinteticos/Simulation_Horseshoe/Ap_PM10_2/Data_PM10")
-load("Data_PM10_2025.RData")
-load("PM10_2025_day.RData")
-
-setwd("C:/Users/alexb/OneDrive/Artigo2/Dados_Sinteticos/Simulation_Horseshoe/Ap_PM10_2/Prediction/teste_2/mcmc")
-load("log_pred_sample_day.RData")
-
-data = Data_PM10_2025 %>%
-       dplyr::select(FECHA, HORA, ACO ,IZT, TAH)
-
-num_miss = data %>%
-           dplyr::select(ACO,IZT,TAH)%>%
-           summarise_all(funs(sum(is.na(.))))
-
-tb1 = data %>%
-      dplyr::select(-FECHA, - HORA) %>%
-      mutate(Day = rep(1:128, each= 24)) %>%
-      relocate(Day,.before = FAC) %>%
-      group_by(Day)%>%
-      summarise(across(FAC:UIZ, ~ median(.x, na.rm = TRUE)))
-
-tb2 = tb1 %>%
-      dplyr::select(-Day) 
-
-tb3 = apply(tb2, c(1, 2), function(x) ifelse(is.na(x), NA, log(x)))
-
-tb4  = PM10_2025_day %>% 
-       dplyr::select(-Day)
-
-tb5 = as.data.frame(apply(tb4, c(1, 2), function(x) ifelse(is.na(x), NA, log(x))))
-
-tb6 = tb5 %>%
-      dplyr::select(ACO)
-
-Pred_logPM10_2025_day = bind_cols(tb1[,1], tb3, tb6)
-
-save(Pred_logPM10_2025_day,file = "C:/Users/alexb/OneDrive/Artigo2/Dados_Sinteticos/Simulation_Horseshoe/Ap_PM10_2/Data_PM10/Pred_logPM10_2025_day.RData")
