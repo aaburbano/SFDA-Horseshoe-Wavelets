@@ -348,3 +348,23 @@ fit_model = mod$sample(
   adapt_delta     = 0.99,
   max_treedepth   = 12
 )
+
+# --- Diagnostics and Saving Results ---
+fit_model$diagnostic_summary()
+sumario = fit_model$summary()
+
+# Rhat and ESS diagnostics
+pior_rhat = sumario %>% arrange(desc(rhat)) %>% head(20)
+pior_ess = sumario %>% arrange(ess_bulk) %>% head(20)
+
+# Save draws and diagnostics
+draws_1 = fit_model$draws(c("theta", "phi", "sigma_obs", "sigma_coarse"))
+variable = as_draws_matrix(draws_1)
+diagnostic_pm10 = summarise_draws(variable, "mean", "median", "sd", default_convergence_measures())
+
+draws_3 = fit_model$draws("theta_pred")
+variable2 = as_draws_matrix(draws_3)
+diagnostic_pred = summarise_draws(variable2, "mean", "median", "sd", default_convergence_measures())
+
+# Output paths (adjusted for GitHub structure)
+save(diagnostic_pred, file = ".../diagnostic_pred.RData")
