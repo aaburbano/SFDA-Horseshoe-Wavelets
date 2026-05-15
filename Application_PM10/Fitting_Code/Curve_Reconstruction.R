@@ -10,8 +10,7 @@ library("posterior")
 library("bayesplot")
 library("coda")
 
-setwd("C:/Users/alexb/OneDrive/Artigo2/Dados_Sinteticos/Simulation_Horseshoe/Ap_PM10_2/Data_PM10")
-load("PM10_2025_day.RData")
+load("../Main_Data/PM10_2025_day.RData")
 
 Sample  = PM10_2025_day %>% 
           dplyr::select(-Day)
