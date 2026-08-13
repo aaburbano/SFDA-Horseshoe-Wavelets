@@ -13,8 +13,6 @@ library("matrixcalc")
 library("cmdstanr")
 
 load("../Main_Data/PM10_2025_day.RData")
-load("../Main_Data/coord.RData")
-
 load("../Main_Data/coordinates_utm_full_km.RData")
 load("../Main_Data/coordinates_utm_obs_km.RData")
 #-------------------------------------------------------------------------------
@@ -26,10 +24,10 @@ Sample = apply(Sample, c(1, 2), function(x) ifelse(is.na(x), NA, log(x)))
 Sample = as.data.frame(Sample)
 
 log_sample = Sample %>%
-             dplyr::select(-ACO, -IZT, -TAH)
+             dplyr::select(-ACO,-AJM,-IZT)
 
 Yobs_pred = Sample %>%
-            dplyr::select(ACO, IZT, TAH)
+            dplyr::select(ACO, AJM, TAH)
 
 m_obs  = dim(log_sample)[2]
 m_pred = dim(Yobs_pred)[2]
@@ -236,8 +234,8 @@ transformed parameters {
 }
   
 model {
-sigma_obs ~ student_t(2, 0 , 1);
-sigma_coarse ~ student_t(2, 0 , 1);
+sigma_obs ~ student_t(4, 0 , 1);
+sigma_coarse ~ student_t(4, 0 , 1);
 phi ~ lognormal(log(0.35 * D_max), 1);
 
 to_vector(z) ~ std_normal();
@@ -341,10 +339,10 @@ data_list <- list(
 fit_model = mod$sample(
   data            = data_list,
   seed            = 123,
-  chains          = 2,
-  parallel_chains = 2,
+  chains          = 4,
+  parallel_chains = 1,
   iter_warmup     = 2000,
-  iter_sampling   = 2000,
+  iter_sampling   = 1000,
   adapt_delta     = 0.99,
   max_treedepth   = 12
 )
