@@ -13,7 +13,7 @@ library("snowfall")
 
 load(".../Simulation_Studies/Main_Data/SNR/Medium/Data_Simulation_3/locations_obs.RData")
 load(".../Simulation_Studies/Main_Data/SNR/Medium/Data_Simulation_3/locations_full.RData")
-load(".../Simulation_Studies/Main_Data/SNR/Medium/Data_Simulation_3/Yobs.RData")
+load(".../Simulation_Studies/Main_Data/SNR/Medium/Data_Simulation_3/Yobs_100.RData")
 
 #-------------------------------------------------------------------------------
 # General parameters
@@ -146,8 +146,8 @@ transformed parameters {
 }
   
 model {
-sigma_obs ~ student_t(2, 0 , 1);
-sigma_coarse ~ student_t(2, 0 , 1);
+sigma_obs ~ student_t(4, 0 , 1);
+sigma_coarse ~ student_t(4, 0 , 1);
 phi ~ lognormal(log(0.35 * D_max), 1);
 
 to_vector(z) ~ std_normal();
@@ -314,18 +314,20 @@ MonteCarlo=function(step){
     slab_scale            = slab_scale,
     slab_df               = slab_df
   )
+# Replica-based timing for the computational cost table
+  tempo_inicio = Sys.time()
   
   fit_model = mod$sample(
     data            = data_list,
     seed            = 123,
-    chains          = 2,
-    parallel_chains = 2, 
+    chains          = 4,
+    parallel_chains = 1, 
     iter_warmup     = 2000,
-    iter_sampling   = 2000,
+    iter_sampling   = 1000,
     adapt_delta     = 0.99,
     max_treedepth   = 12
   )
-  
+  tempo_total = as.numeric(difftime(Sys.time(), tempo_inicio, units = "mins"))
   ##################
   ### Parameters ###
   ##################
@@ -353,24 +355,46 @@ MonteCarlo=function(step){
   #3
   diag3 = as.data.frame(variable2)
   diag3$id = step # Simulation identifier
-  
+
+  #4
+  diag_sampler = fit_model$diagnostic_summary()
+  variable2_conv = summarise_draws(variable2, default_convergence_measures())
+
+  diag4 = data.frame(
+    tempo_min          = tempo_total,
+    n_divergences      = sum(diag_sampler$num_divergent),
+    n_max_treedepth    = sum(diag_sampler$num_max_treedepth),
+    # (a) Predictions: What Matters for the Comparison
+    rhat_max_pred      = max(variable2_conv$rhat,     na.rm = TRUE),
+    ess_min_pred       = min(variable2_conv$ess_bulk, na.rm = TRUE),
+    # global, retained for backward compatibility
+    rhat_max_global    = max(diag$rhat,     na.rm = TRUE),
+    ess_min_global     = min(diag$ess_bulk, na.rm = TRUE),
+    id                 = step
+  )
   #---
   write.table(diag,file="/home/alextk4/Simu/diag.txt",
               sep = ",",
               col.names=FALSE,
-              row.names=FALSE ,
+              row.names=FALSE,
               append = TRUE)
   
   write.table(diag2,file="/home/alextk4/Simu/diag2.txt",
               sep = ",",
               col.names=FALSE,
-              row.names=FALSE ,
+              row.names=FALSE,
               append = TRUE)
   
   write.table(diag3,file="/home/alextk4/Simu/diag3.txt",
               sep = ",",
               col.names=FALSE,
-              row.names=FALSE ,
+              row.names=FALSE,
+              append = TRUE)
+
+  write.table(diag4,file="/home/alextk4/Simu/diag4.txt",
+              sep = ",",
+              col.names=FALSE,
+              row.names=FALSE,
               append = TRUE)
   #-----------------------------------------------------------------------------
   
@@ -448,7 +472,7 @@ MonteCarlo=function(step){
   write.table(Y_hat,file="/home/alextk4/Simu/Y_hat.txt",
               sep = ",",
               col.names=FALSE,
-              row.names=FALSE ,
+              row.names=FALSE,
               append = TRUE)
   #-----------------------------------------------------------------------------
   
@@ -457,7 +481,7 @@ MonteCarlo=function(step){
 }
 
 # Define number of CPUs and total simulations beforehand
-num_cpus = 6 # Example, adjust as necessary
+num_cpus = 10 # Example, adjust as necessary
 N_sim = 300  # Replaced 'int' with a proper variable name
 
 sfInit(parallel=TRUE, cpus=num_cpus)
